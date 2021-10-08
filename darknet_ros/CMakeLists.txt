@@ -20,12 +20,14 @@ add_definitions(-DDARKNET_FILE_PATH="${DARKNET_PATH}")
 set(CMAKE_MODULE_PATH "${DARKNET_PATH}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
 # Find CUDA
-find_package(CUDA QUIET)
+find_package(CUDA)
 
 if (CUDA_FOUND)
   # Get CUDA Compute capability with modified script from internet
   set(CUDAFILE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/check_cuda.cu)
-  set(OUTPUTFILE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cuda_check) 
+  set(OUTPUTFILE /logs/cuda_check) 
+
+  #set(OUTPUTFILE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cuda_check) 
   # Compile cuda arch check script
   execute_process(COMMAND nvcc -lcuda ${CUDAFILE} -o ${OUTPUTFILE})
   execute_process(COMMAND ${OUTPUTFILE}
