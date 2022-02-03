@@ -27,7 +27,7 @@ char** detectionNames;
 
 YoloObjectDetector::YoloObjectDetector(ros::NodeHandle nh)
     : nodeHandle_(nh), imageTransport_(nodeHandle_), numClasses_(0), classLabels_(0), rosBoxes_(0), rosBoxCounter_(0) {
-  ROS_INFO("[YoloObjectDetector] Node started.");
+  ROS_DEBUG("[YoloObjectDetector] Node started.");
 
   // Read parameters from config file.
   if (!readParameters()) {
@@ -54,9 +54,9 @@ bool YoloObjectDetector::readParameters() {
   // Check if Xserver is running on Linux.
   if (XOpenDisplay(NULL)) {
     // Do nothing!
-    ROS_INFO("[YoloObjectDetector] Xserver is running.");
+    ROS_DEBUG("[YoloObjectDetector] Xserver is running.");
   } else {
-    ROS_INFO("[YoloObjectDetector] Xserver is not running.");
+    ROS_DEBUG("[YoloObjectDetector] Xserver is not running.");
     viewImage_ = false;
   }
 
@@ -70,7 +70,7 @@ bool YoloObjectDetector::readParameters() {
 }
 
 void YoloObjectDetector::init() {
-  ROS_INFO("[YoloObjectDetector] init().");
+  ROS_DEBUG("[YoloObjectDetector] init().");
 
   // Initialize deep network of darknet.
   std::string weightsPath;
@@ -330,7 +330,7 @@ void* YoloObjectDetector::detectInThread() {
     printf("Objects:\n\n");
   }
   image display = buff_[(buffIndex_ + 2) % 3];
-  draw_detections_v3(display, dets, nboxes, demoThresh_, demoNames_, demoAlphabet_, demoClasses_, 0);
+  draw_detections_v3(display, dets, nboxes, demoThresh_, demoNames_, demoAlphabet_, demoClasses_, 0, 0);
 
   // extract the bounding boxes and send them to ROS
   int i, j;
@@ -450,7 +450,10 @@ void YoloObjectDetector::setupNetwork(char* cfgfile, char* weightfile, char* dat
   demoThresh_ = thresh;
   demoHier_ = hier;
   fullScreen_ = fullscreen;
-  printf("YOLO\n");
+  if(enableConsoleOutput_){
+    printf("YOLO\n");
+  }
+  
   net_ = load_network(cfgfile, weightfile, 0);
   set_batch_network(net_, 1);
 }
@@ -458,7 +461,9 @@ void YoloObjectDetector::setupNetwork(char* cfgfile, char* weightfile, char* dat
 void YoloObjectDetector::yolo() {
   const auto wait_duration = std::chrono::milliseconds(2000);
   while (!getImageStatus()) {
-    printf("Waiting for image.\n");
+    if(enableConsoleOutput_){
+      printf("Waiting for image.\n");
+    }
     if (!isNodeRunning()) {
       return;
     }
