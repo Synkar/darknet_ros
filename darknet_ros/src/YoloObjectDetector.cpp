@@ -158,7 +158,7 @@ void YoloObjectDetector::init() {
 
 void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg) {
   ROS_DEBUG("[YoloObjectDetector] USB image received.");
-
+  
   cv_bridge::CvImagePtr cam_image;
 
   try {
@@ -472,6 +472,7 @@ void YoloObjectDetector::yolo() {
 
   std::thread detect_thread;
   std::thread fetch_thread;
+  
 
   srand(2222222);
 
@@ -549,6 +550,10 @@ void YoloObjectDetector::yolo() {
       demoDone_ = true;
     }
   }
+
+  free(predictions_);
+  free(avg_);
+  free(roiBoxes_);
 }
 
 CvMatWithHeader_ YoloObjectDetector::getCvMatWithHeader() {
@@ -597,7 +602,7 @@ void* YoloObjectDetector::publishInThread() {
     msg.header.frame_id = "detection";
     msg.count = num;
     objectPublisher_.publish(msg);
-
+    
     for (int i = 0; i < numClasses_; i++) {
       if (rosBoxCounter_[i] > 0) {
         darknet_ros_msgs::BoundingBox boundingBox;
@@ -623,6 +628,7 @@ void* YoloObjectDetector::publishInThread() {
     boundingBoxesResults_.header.frame_id = "detection";
     boundingBoxesResults_.image_header = headerBuff_[(buffIndex_ + 1) % 3];
     boundingBoxesPublisher_.publish(boundingBoxesResults_);
+    
   } else {
     darknet_ros_msgs::ObjectCount msg;
     msg.header.stamp = ros::Time::now();
