@@ -1,29 +1,15 @@
-/*
- *   Author: Timon Homberger
- *   Institute: ETH Zurich, Robotic Systems Lab
- */
-
-#include <nodelet/nodelet.h>
-#include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <darknet_ros/YoloObjectDetector.hpp>
+#include "nodelet/loader.h"
 
-class DarknetRosNodelet : public nodelet::Nodelet {
- public:
-  DarknetRosNodelet() = default;
-  ~DarknetRosNodelet() {
-    if (darknetRos_) delete darknetRos_;
-  }
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "darknet_ros");
+    nodelet::V_string nargv;
+    nodelet::Loader nodelet;
+    nodelet::M_string remap(ros::names::getRemappings());
+    std::string nodelet_name = ros::this_node::getName();
+    nodelet.load(nodelet_name, "darknet_ros/yolo_object_detector", remap, nargv);
 
- private:
-  virtual void onInit() {
-    ros::NodeHandle NodeHandle("~");
-    NodeHandle = getPrivateNodeHandle();
-    darknetRos_ = new darknet_ros::YoloObjectDetector(NodeHandle);
-  }
-
-  darknet_ros::YoloObjectDetector* darknetRos_;
-};
-
-// Declare as a Plug-in
-PLUGINLIB_EXPORT_CLASS(DarknetRosNodelet, nodelet::Nodelet);
+    ros::spin();
+    return 0;
+}

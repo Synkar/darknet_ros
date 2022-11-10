@@ -25,6 +25,7 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 #include <std_msgs/Header.h>
+#include <nodelet/nodelet.h>
 
 // OpenCv
 #include <cv_bridge/cv_bridge.h>
@@ -78,18 +79,12 @@ typedef struct {
   std_msgs::Header header;
 } CvMatWithHeader_;
 
-class YoloObjectDetector {
+class YoloObjectDetector : public nodelet::Nodelet{
  public:
-  /*!
-   * Constructor.
-   */
-  explicit YoloObjectDetector(ros::NodeHandle nh);
-
-  /*!
-   * Destructor.
-   */
+  
+  YoloObjectDetector();
   ~YoloObjectDetector();
-
+  virtual void onInit();
  private:
   /*!
    * Reads and verifies the ROS parameters.
@@ -100,7 +95,7 @@ class YoloObjectDetector {
   /*!
    * Initialize the ROS connections.
    */
-  void init();
+  void init(ros::NodeHandle node_handle);
 
   /*!
    * Callback of camera.
@@ -135,7 +130,7 @@ class YoloObjectDetector {
   using CheckForObjectsActionServerPtr = std::shared_ptr<CheckForObjectsActionServer>;
 
   //! ROS node handle.
-  ros::NodeHandle nodeHandle_;
+  // ros::NodeHandle nodeHandle_;
 
   //! Class labels.
   int numClasses_;
@@ -145,7 +140,7 @@ class YoloObjectDetector {
   CheckForObjectsActionServerPtr checkForObjectsActionServer_;
 
   //! Advertise and subscribe to image topics.
-  image_transport::ImageTransport imageTransport_;
+  //image_transport::ImageTransport imageTransport_;
 
   //! ROS subscriber and publisher.
   image_transport::Subscriber imageSubscriber_;
