@@ -138,8 +138,6 @@ include_directories(
 
 set(PROJECT_LIB_FILES
     src/YoloObjectDetector.cpp                    src/image_interface.cpp
-    src/yolo_object_detector_nodelet.cpp
-    #src/yolo_object_detector_node.cpp
 )
 
 set(DARKNET_CORE_FILES
@@ -216,13 +214,6 @@ if (CUDA_SUCCESS)
     endif()
   endif()
 
-  #cuda_add_executable(${PROJECT_NAME}
-  #  src/yolo_object_detector_node.cpp
-  #)
-
-  #cuda_add_library(${PROJECT_NAME}_nodelet
-  #  src/yolo_object_detector_nodelet.cpp
-  #)
   cuda_add_executable(${PROJECT_NAME}
     src/yolo_object_detector_nodelet.cpp
   )
@@ -233,16 +224,10 @@ else()
     ${PROJECT_LIB_FILES} ${DARKNET_CORE_FILES}
   )
 
-  #add_executable(${PROJECT_NAME}
-  #  src/yolo_object_detector_node.cpp
-  #)
   add_executable(${PROJECT_NAME} 
                 src/yolo_object_detector_nodelet.cpp
   )
 
-  #add_library(${PROJECT_NAME}_nodelet
-  #  src/yolo_object_detector_nodelet.cpp
-  #)
 
 endif()
 
@@ -260,13 +245,10 @@ target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}_lib
 )
 
-#target_link_libraries(${PROJECT_NAME}_nodelet
-#  ${PROJECT_NAME}_lib
-#)
-
 add_dependencies(${PROJECT_NAME}_lib
   darknet_ros_msgs_generate_messages_cpp
 )
+
 
 install(TARGETS ${PROJECT_NAME}_lib
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

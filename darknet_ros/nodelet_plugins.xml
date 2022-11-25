@@ -1,4 +1,4 @@
-<library path="lib/libdarknet_ros_nodelet">
+<library path="lib/libdarknet_ros_lib">
 
   <!-- Darknet Ros Plugin -->
   <class name="darknet_ros/yolo_object_detector" 
